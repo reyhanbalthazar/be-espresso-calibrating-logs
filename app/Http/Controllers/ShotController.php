@@ -61,7 +61,7 @@ class ShotController extends Controller
     public function update(Request $request, $sessionId, $shotId)
     {
         $shot = Shot::where('calibration_session_id', $sessionId)
-            ->where('id', $shotId)
+            ->where('shot_number', $shotId)
             ->firstOrFail();
 
         $session = $shot->calibrationSession;
@@ -92,7 +92,7 @@ class ShotController extends Controller
     public function show($sessionId, $shotId)
     {
         $shot = Shot::where('calibration_session_id', $sessionId)
-            ->where('id', $shotId)
+            ->where('shot_number', $shotId)
             ->firstOrFail();
 
         $session = $shot->calibrationSession;
@@ -108,7 +108,7 @@ class ShotController extends Controller
     public function destroy($sessionId, $shotId)
     {
         $shot = Shot::where('calibration_session_id', $sessionId)
-            ->where('id', $shotId)
+            ->where('shot_number', $shotId)
             ->firstOrFail();
 
         $session = $shot->calibrationSession;
