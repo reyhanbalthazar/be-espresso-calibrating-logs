@@ -5,12 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Bean;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class BeanController extends Controller
 {
     public function index()
     {
-        $beans = Bean::withCount('calibrationSessions')
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        $beans = Bean::where('coffee_shop_id', $coffeeShopId)
+            ->withCount('calibrationSessions')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($bean) {
@@ -33,6 +38,9 @@ class BeanController extends Controller
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:150',
             'origin' => 'nullable|string|max:150',
@@ -46,18 +54,22 @@ class BeanController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $bean = Bean::create($request->all());
+        $bean = Bean::create(array_merge($request->all(), ['coffee_shop_id' => $coffeeShopId]));
 
         return response()->json($bean, 201);
     }
 
     public function show($id)
     {
-        $bean = Bean::with(['calibrationSessions' => function ($query) {
-            $query->with(['grinder', 'user'])
-                ->orderBy('session_date', 'desc')
-                ->limit(10);
-        }])->findOrFail($id);
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        $bean = Bean::where('coffee_shop_id', $coffeeShopId)
+            ->with(['calibrationSessions' => function ($query) {
+                $query->with(['grinder', 'user'])
+                    ->orderBy('session_date', 'desc')
+                    ->limit(10);
+            }])->findOrFail($id);
 
         return response()->json([
             'bean' => $bean,
@@ -67,7 +79,10 @@ class BeanController extends Controller
 
     public function update(Request $request, $id)
     {
-        $bean = Bean::findOrFail($id);
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        $bean = Bean::where('coffee_shop_id', $coffeeShopId)->findOrFail($id);
 
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|string|max:150',
@@ -89,7 +104,10 @@ class BeanController extends Controller
 
     public function destroy($id)
     {
-        $bean = Bean::findOrFail($id);
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        $bean = Bean::where('coffee_shop_id', $coffeeShopId)->findOrFail($id);
         $bean->delete();
 
         return response()->json(['message' => 'Bean deleted successfully']);

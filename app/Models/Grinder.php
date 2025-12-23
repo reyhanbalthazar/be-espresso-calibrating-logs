@@ -13,7 +13,13 @@ class Grinder extends Model
         'name',
         'model',
         'notes',
+        'coffee_shop_id',
     ];
+
+    public function coffeeShop()
+    {
+        return $this->belongsTo(CoffeeShop::class);
+    }
 
     public function calibrationSessions()
     {

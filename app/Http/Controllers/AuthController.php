@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\CoffeeShop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -17,6 +18,9 @@ class AuthController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|string|email|max:150|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'coffee_shop_id' => 'nullable|exists:coffee_shops,id', // For joining existing coffee shop
+            'create_coffee_shop' => 'nullable|boolean', // To create new coffee shop
+            'coffee_shop_name' => 'nullable|string|max:150|required_if:create_coffee_shop,1', // Required if creating new coffee shop
         ]);
 
         if ($validator->fails()) {
@@ -25,10 +29,28 @@ class AuthController extends Controller
             ], 422);
         }
 
+        // Handle coffee shop assignment
+        $coffeeShopId = null;
+
+        if ($request->create_coffee_shop) {
+            // Create new coffee shop
+            $coffeeShop = CoffeeShop::create([
+                'name' => $request->coffee_shop_name,
+                'address' => $request->coffee_shop_address ?? null,
+                'phone' => $request->coffee_shop_phone ?? null,
+                'email' => $request->coffee_shop_email ?? null,
+            ]);
+            $coffeeShopId = $coffeeShop->id;
+        } elseif ($request->coffee_shop_id) {
+            // Join existing coffee shop
+            $coffeeShopId = $request->coffee_shop_id;
+        }
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'coffee_shop_id' => $coffeeShopId,
         ]);
 
         $token = $user->createToken('auth-token')->plainTextToken;

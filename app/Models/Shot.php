@@ -31,6 +31,18 @@ class Shot extends Model
         return $this->belongsTo(CalibrationSession::class);
     }
 
+    public function coffeeShop()
+    {
+        return $this->hasOneThrough(
+            CoffeeShop::class,
+            CalibrationSession::class,
+            'id', // Foreign key on calibration_sessions table
+            'id', // Foreign key on coffee_shops table
+            'calibration_session_id', // Local key on shots table
+            'coffee_shop_id' // Local key on calibration_sessions table
+        );
+    }
+
     public function getExtractionYieldAttribute()
     {
         if ($this->dose > 0) {

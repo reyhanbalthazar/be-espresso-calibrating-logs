@@ -6,6 +6,7 @@ use App\Models\Shot;
 use App\Models\CalibrationSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 // use log
 use Illuminate\Support\Facades\Log;
 
@@ -13,6 +14,14 @@ class ShotController extends Controller
 {
     public function index($sessionId)
     {
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        // Verify the session belongs to the user's coffee shop
+        $session = CalibrationSession::where('id', $sessionId)
+            ->where('coffee_shop_id', $coffeeShopId)
+            ->firstOrFail();
+
         $shots = Shot::where('calibration_session_id', $sessionId)
             ->orderBy('shot_number')
             ->get();
@@ -22,7 +31,13 @@ class ShotController extends Controller
 
     public function store(Request $request, $sessionId)
     {
-        $session = CalibrationSession::findOrFail($sessionId);
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        // Verify the session belongs to the user's coffee shop
+        $session = CalibrationSession::where('id', $sessionId)
+            ->where('coffee_shop_id', $coffeeShopId)
+            ->firstOrFail();
 
         // Ensure user owns this session
         if ($session->user_id !== auth()->id()) {
@@ -30,6 +45,7 @@ class ShotController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
+            'shot_number' => 'required|integer|min:1',
             'grind_setting' => 'required|string|max:50',
             'dose' => 'required|numeric|min:0|max:999.99',
             'yield' => 'required|numeric|min:0|max:999.99',
@@ -58,11 +74,17 @@ class ShotController extends Controller
 
     public function update(Request $request, $sessionId, $shotId)
     {
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        // Verify the session belongs to the user's coffee shop
+        $session = CalibrationSession::where('id', $sessionId)
+            ->where('coffee_shop_id', $coffeeShopId)
+            ->firstOrFail();
+
         $shot = Shot::where('calibration_session_id', $sessionId)
             ->where('shot_number', $shotId)
             ->firstOrFail();
-
-        $session = $shot->calibrationSession;
 
         // Ensure user owns this session
         if ($session->user_id !== auth()->id()) {
@@ -89,11 +111,17 @@ class ShotController extends Controller
 
     public function show($sessionId, $shotId)
     {
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        // Verify the session belongs to the user's coffee shop
+        $session = CalibrationSession::where('id', $sessionId)
+            ->where('coffee_shop_id', $coffeeShopId)
+            ->firstOrFail();
+
         $shot = Shot::where('calibration_session_id', $sessionId)
             ->where('shot_number', $shotId)
             ->firstOrFail();
-
-        $session = $shot->calibrationSession;
 
         // Ensure user owns this session
         if ($session->user_id !== auth()->id()) {
@@ -105,11 +133,17 @@ class ShotController extends Controller
 
     public function destroy($sessionId, $shotId)
     {
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        // Verify the session belongs to the user's coffee shop
+        $session = CalibrationSession::where('id', $sessionId)
+            ->where('coffee_shop_id', $coffeeShopId)
+            ->firstOrFail();
+
         $shot = Shot::where('calibration_session_id', $sessionId)
             ->where('shot_number', $shotId)
             ->firstOrFail();
-
-        $session = $shot->calibrationSession;
 
         // Ensure user owns this session
         if ($session->user_id !== auth()->id()) {

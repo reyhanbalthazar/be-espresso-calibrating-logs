@@ -5,12 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Grinder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class GrinderController extends Controller
 {
     public function index()
     {
-        $grinders = Grinder::withCount('calibrationSessions')
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        $grinders = Grinder::where('coffee_shop_id', $coffeeShopId)
+            ->withCount('calibrationSessions')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -19,6 +24,9 @@ class GrinderController extends Controller
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:150',
             'model' => 'nullable|string|max:150',
@@ -29,25 +37,32 @@ class GrinderController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $grinder = Grinder::create($request->all());
+        $grinder = Grinder::create(array_merge($request->all(), ['coffee_shop_id' => $coffeeShopId]));
 
         return response()->json($grinder, 201);
     }
 
     public function show($id)
     {
-        $grinder = Grinder::with(['calibrationSessions' => function ($query) {
-            $query->with(['bean', 'user'])
-                ->orderBy('session_date', 'desc')
-                ->limit(10);
-        }])->findOrFail($id);
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        $grinder = Grinder::where('coffee_shop_id', $coffeeShopId)
+            ->with(['calibrationSessions' => function ($query) {
+                $query->with(['bean', 'user'])
+                    ->orderBy('session_date', 'desc')
+                    ->limit(10);
+            }])->findOrFail($id);
 
         return response()->json($grinder);
     }
 
     public function update(Request $request, $id)
     {
-        $grinder = Grinder::findOrFail($id);
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        $grinder = Grinder::where('coffee_shop_id', $coffeeShopId)->findOrFail($id);
 
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|string|max:150',
@@ -66,7 +81,10 @@ class GrinderController extends Controller
 
     public function destroy($id)
     {
-        $grinder = Grinder::findOrFail($id);
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        $grinder = Grinder::where('coffee_shop_id', $coffeeShopId)->findOrFail($id);
         $grinder->delete();
 
         return response()->json(['message' => 'Grinder deleted successfully']);

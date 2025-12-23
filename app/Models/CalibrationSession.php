@@ -13,6 +13,7 @@ class CalibrationSession extends Model
         'bean_id',
         'grinder_id',
         'user_id',
+        'coffee_shop_id',
         'session_date',
         'notes',
     ];
@@ -20,6 +21,11 @@ class CalibrationSession extends Model
     protected $casts = [
         'session_date' => 'date',
     ];
+
+    public function coffeeShop()
+    {
+        return $this->belongsTo(CoffeeShop::class);
+    }
 
     public function bean()
     {

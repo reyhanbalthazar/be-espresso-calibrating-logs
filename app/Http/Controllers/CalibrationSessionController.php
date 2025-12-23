@@ -5,12 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\CalibrationSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class CalibrationSessionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = CalibrationSession::with(['bean', 'grinder', 'user', 'shots'])
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        $query = CalibrationSession::where('coffee_shop_id', $coffeeShopId)
+            ->with(['bean', 'grinder', 'user', 'shots'])
             ->orderBy('session_date', 'desc');
 
         if ($request->has('bean_id')) {
@@ -32,6 +37,9 @@ class CalibrationSessionController extends Controller
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
         $validator = Validator::make($request->all(), [
             'bean_id' => 'required|exists:beans,id',
             'grinder_id' => 'required|exists:grinders,id',
@@ -43,10 +51,20 @@ class CalibrationSessionController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
+        // Verify that the bean and grinder belong to the same coffee shop
+        $bean = \App\Models\Bean::where('id', $request->bean_id)
+            ->where('coffee_shop_id', $coffeeShopId)
+            ->firstOrFail();
+
+        $grinder = \App\Models\Grinder::where('id', $request->grinder_id)
+            ->where('coffee_shop_id', $coffeeShopId)
+            ->firstOrFail();
+
         $session = CalibrationSession::create([
             'bean_id' => $request->bean_id,
             'grinder_id' => $request->grinder_id,
             'user_id' => auth()->id(),
+            'coffee_shop_id' => $coffeeShopId,
             'session_date' => $request->session_date,
             'notes' => $request->notes,
         ]);
@@ -56,7 +74,11 @@ class CalibrationSessionController extends Controller
 
     public function show($id)
     {
-        $session = CalibrationSession::with(['bean', 'grinder', 'user', 'shots'])
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        $session = CalibrationSession::where('coffee_shop_id', $coffeeShopId)
+            ->with(['bean', 'grinder', 'user', 'shots'])
             ->findOrFail($id);
 
         return response()->json($session);
@@ -64,7 +86,10 @@ class CalibrationSessionController extends Controller
 
     public function update(Request $request, $id)
     {
-        $session = CalibrationSession::findOrFail($id);
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        $session = CalibrationSession::where('coffee_shop_id', $coffeeShopId)->findOrFail($id);
 
         // Ensure user owns this session
         if ($session->user_id !== auth()->id()) {
@@ -87,7 +112,10 @@ class CalibrationSessionController extends Controller
 
     public function destroy($id)
     {
-        $session = CalibrationSession::findOrFail($id);
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        $session = CalibrationSession::where('coffee_shop_id', $coffeeShopId)->findOrFail($id);
 
         // Ensure user owns this session
         if ($session->user_id !== auth()->id()) {

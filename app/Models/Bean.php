@@ -16,11 +16,17 @@ class Bean extends Model
         'roast_level',
         'roast_date',
         'notes',
+        'coffee_shop_id',
     ];
 
     protected $casts = [
         'roast_date' => 'date',
     ];
+
+    public function coffeeShop()
+    {
+        return $this->belongsTo(CoffeeShop::class);
+    }
 
     public function calibrationSessions()
     {

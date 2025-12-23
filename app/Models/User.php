@@ -15,6 +15,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'coffee_shop_id',
     ];
 
     protected $hidden = [
@@ -26,6 +27,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function coffeeShop()
+    {
+        return $this->belongsTo(CoffeeShop::class);
+    }
 
     public function calibrationSessions()
     {
