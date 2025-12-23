@@ -6,6 +6,7 @@ A Laravel application for tracking and calibrating espresso shots to achieve the
 
 ## Features
 
+- **Multi-Coffee Shop Support**: Each coffee shop has its own isolated data and users
 - **User Authentication**: Secure registration and login system with Laravel Sanctum
 - **Bean Management**: Track different coffee beans with details like roaster, roast level, origin, and variety
 - **Grinder Management**: Catalog different grinders used for calibration
@@ -18,16 +19,21 @@ A Laravel application for tracking and calibrating espresso shots to achieve the
 All API endpoints are available at `/api/` and require authentication using Laravel Sanctum tokens.
 
 ### Authentication Endpoints
-- `POST /api/register` - Create a new user account
+- `POST /api/register` - Create a new user account (with optional coffee shop creation/joining)
 - `POST /api/login` - Authenticate and receive token
 - `POST /api/logout` - Revoke user tokens
 - `GET /api/user` - Get current user details
 
+### Coffee Shop Endpoints
+- `GET/POST/PUT/DELETE /api/coffee-shops` - Manage coffee shops (TBD)
+
 ### Resource Endpoints
-- `GET/POST/PUT/DELETE /api/beans` - Manage coffee beans
-- `GET/POST/PUT/DELETE /api/grinders` - Manage grinders
-- `GET/POST/PUT/DELETE /api/calibration-sessions` - Manage calibration sessions
-- `GET/POST/PUT/DELETE /api/calibration-sessions/{id}/shots` - Manage shots within sessions
+- `GET/POST/PUT/DELETE /api/beans` - Manage coffee beans (filtered by user's coffee shop)
+- `GET/POST/PUT/DELETE /api/grinders` - Manage grinders (filtered by user's coffee shop)
+- `GET/POST/PUT/DELETE /api/calibration-sessions` - Manage calibration sessions (filtered by user's coffee shop)
+- `GET/POST/PUT/DELETE /api/calibration-sessions/{id}/shots` - Manage shots within sessions (filtered by user's coffee shop)
+
+**Note**: All resource endpoints are automatically filtered by the user's assigned coffee shop. Users can only access resources belonging to their coffee shop.
 
 Detailed API documentation is available in the `backend-docs.txt` file.
 
@@ -74,6 +80,19 @@ Detailed API documentation is available in the `backend-docs.txt` file.
 ## Usage
 
 This application is designed to work with a frontend application. API documentation is provided to help frontend developers implement the UI/UX. The application follows RESTful API principles and uses Laravel Sanctum for authentication.
+
+### Multi-Coffee Shop Functionality
+
+The application supports multiple coffee shops with isolated data:
+
+- Each coffee shop has its own set of beans, grinders, and calibration sessions
+- Users are assigned to a specific coffee shop upon registration
+- Users can only access resources (beans, grinders, sessions) belonging to their assigned coffee shop
+- Coffee shop data is automatically filtered based on the authenticated user's coffee shop assignment
+
+When registering a new user, you can either:
+- Create a new coffee shop for the user
+- Assign the user to an existing coffee shop
 
 ## About Laravel
 
