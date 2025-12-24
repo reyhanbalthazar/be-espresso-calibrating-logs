@@ -16,6 +16,7 @@ class Shot extends Model
         'dose',
         'yield',
         'time_seconds',
+        'water_temperature',
         'taste_notes',
         'action_taken',
     ];
@@ -24,6 +25,7 @@ class Shot extends Model
         'dose' => 'decimal:2',
         'yield' => 'decimal:2',
         'time_seconds' => 'integer',
+        'water_temperature' => 'decimal:2',
     ];
 
     public function calibrationSession()

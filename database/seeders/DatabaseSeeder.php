@@ -275,6 +275,7 @@ class DatabaseSeeder extends Seeder
                     'dose' => $dose,
                     'yield' => $yield,
                     'time_seconds' => $time,
+                    'water_temperature' => rand(9000, 9600) / 100, // Random temperature between 90.00°C and 96.00°C
                     'taste_notes' => $this->generateTasteNotes(),
                     'action_taken' => $this->generateActionTaken($shotNum),
                 ]);

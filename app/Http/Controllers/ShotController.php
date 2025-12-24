@@ -50,6 +50,7 @@ class ShotController extends Controller
             'dose' => 'required|numeric|min:0|max:999.99',
             'yield' => 'required|numeric|min:0|max:999.99',
             'time_seconds' => 'required|integer|min:1|max:999',
+            'water_temperature' => 'nullable|numeric|min:0|max:999.99',
             'taste_notes' => 'nullable|string',
             'action_taken' => 'nullable|string',
         ]);
@@ -65,6 +66,7 @@ class ShotController extends Controller
             'dose' => $request->dose,
             'yield' => $request->yield,
             'time_seconds' => $request->time_seconds,
+            'water_temperature' => $request->water_temperature,
             'taste_notes' => $request->taste_notes,
             'action_taken' => $request->action_taken,
         ]);
