@@ -6,6 +6,7 @@ use App\Http\Controllers\BeanController;
 use App\Http\Controllers\GrinderController;
 use App\Http\Controllers\CalibrationSessionController;
 use App\Http\Controllers\ShotController;
+use App\Http\Controllers\DataVisualizationController;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -32,5 +33,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('shots', ShotController::class)->except(['index', 'show']);
         Route::get('/shots', [ShotController::class, 'index']);
         Route::get('/shots/{shot}', [ShotController::class, 'show']);
+    });
+
+    // Data Visualization
+    Route::prefix('visualization')->group(function () {
+        Route::get('/extraction-trends', [DataVisualizationController::class, 'extractionTrends']);
+        Route::get('/comparative-analysis', [DataVisualizationController::class, 'comparativeAnalysis']);
+        Route::get('/optimal-parameters', [DataVisualizationController::class, 'optimalParameters']);
+        Route::get('/summary-stats', [DataVisualizationController::class, 'summaryStats']);
     });
 });
