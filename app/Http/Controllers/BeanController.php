@@ -27,6 +27,7 @@ class BeanController extends Controller
                     'roast_level' => $bean->roast_level,
                     'roast_date' => $bean->roast_date,
                     'roast_age' => $bean->roast_age,
+                    'is_blend' => $bean->is_blend,
                     'notes' => $bean->notes,
                     'sessions_count' => $bean->calibration_sessions_count,
                     'created_at' => $bean->created_at,
@@ -47,6 +48,7 @@ class BeanController extends Controller
             'roastery' => 'nullable|string|max:150',
             'roast_level' => 'nullable|in:light,medium,dark',
             'roast_date' => 'nullable|date',
+            'is_blend' => 'nullable|boolean',
             'notes' => 'nullable|string',
         ]);
 
@@ -90,6 +92,7 @@ class BeanController extends Controller
             'roastery' => 'nullable|string|max:150',
             'roast_level' => 'nullable|in:light,medium,dark',
             'roast_date' => 'nullable|date',
+            'is_blend' => 'nullable|boolean',
             'notes' => 'nullable|string',
         ]);
 

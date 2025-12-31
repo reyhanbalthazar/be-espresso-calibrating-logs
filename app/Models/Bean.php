@@ -15,12 +15,14 @@ class Bean extends Model
         'roastery',
         'roast_level',
         'roast_date',
+        'is_blend',
         'notes',
         'coffee_shop_id',
     ];
 
     protected $casts = [
         'roast_date' => 'date',
+        'is_blend' => 'boolean',
     ];
 
     public function coffeeShop()
