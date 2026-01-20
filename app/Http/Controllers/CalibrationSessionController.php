@@ -16,7 +16,7 @@ class CalibrationSessionController extends Controller
 
         $query = CalibrationSession::where('coffee_shop_id', $coffeeShopId)
             ->with(['bean', 'grinder', 'user', 'shots'])
-            ->orderBy('session_date', 'desc');
+            ->orderBy('created_at', 'desc');
 
         if ($request->has('bean_id')) {
             $query->where('bean_id', $request->bean_id);
