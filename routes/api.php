@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Calibration Sessions
     Route::apiResource('calibration-sessions', CalibrationSessionController::class);
-    Route::get('/beans/{bean}/sessions', [CalibrationSessionController::class, 'index']);
+    Route::get('/beans/{bean}/sessions', [CalibrationSessionController::class, 'sessionsByBean']);
 
     // Shots
     Route::prefix('calibration-sessions/{session}')->group(function () {

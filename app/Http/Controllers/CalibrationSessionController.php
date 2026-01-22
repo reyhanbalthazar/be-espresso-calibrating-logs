@@ -35,6 +35,21 @@ class CalibrationSessionController extends Controller
         return response()->json($sessions);
     }
 
+    public function sessionsByBean(Request $request, $bean)
+    {
+        $user = Auth::user();
+        $coffeeShopId = $user->coffee_shop_id;
+
+        $query = CalibrationSession::where('coffee_shop_id', $coffeeShopId)
+            ->where('bean_id', $bean)
+            ->with(['bean', 'grinder', 'user', 'shots'])
+            ->orderBy('created_at', 'desc');
+
+        $sessions = $query->paginate(20);
+
+        return response()->json($sessions);
+    }
+
     public function store(Request $request)
     {
         $user = Auth::user();
