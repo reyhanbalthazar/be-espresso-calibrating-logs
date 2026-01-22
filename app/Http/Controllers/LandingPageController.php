@@ -170,8 +170,6 @@ class LandingPageController extends Controller
                 'yield' => round($shots->avg_yield ?? 0, 2),
                 'time' => round($shots->avg_time ?? 0, 1),
                 'temperature' => round($shots->avg_temp ?? 0, 1),
-                'extraction_yield' => $shots->avg_dose ?
-                    round(($shots->avg_yield / $shots->avg_dose) * 100, 1) : 0,
             ],
             'last_session_shots' => $lastSessionShots,
         ];
